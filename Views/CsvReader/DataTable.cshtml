@@ -1,0 +1,121 @@
+﻿@model IEnumerable<HotelDto>
+
+@{
+    ViewData["Title"] = "DataTable";
+}
+
+<h2>DataTable</h2>
+<br />
+
+<div class="dropdown">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"> Export Type </button>
+    <div class="dropdown-menu">
+        <h5 class="dropdown-header"> Çıktı Türleri </h5>
+        <a class="dropdown-item" onclick="jsonExport('Json_')"> JSON </a>
+        <a class="dropdown-item" onclick="xmlExport('Xml_')"> XML </a>
+        <a class="dropdown-item" onclick="pdfExport('Pdf_')"> PDF </a>
+        <a class="dropdown-item" onclick="csvExport('Csv_')"> CSV </a>        
+    </div>
+</div>
+
+<br />
+<table class="table table-responsive" id="csvTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Starts</th>
+            <th>Contact</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Uri</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var hotel in Model)
+        {
+            <tr>
+                <td>
+                    @hotel.Name
+                </td>
+                <td>
+                    @hotel.Stars
+                </td>
+                <td>
+                    @hotel.Contact
+                </td>
+                <td>
+                    @hotel.Phone
+                </td>
+                <td>
+                    @hotel.Address
+                </td>
+                <td>
+                    @hotel.Uri
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#csvTable').DataTable({
+                "scrollY": "500px",
+                "scrollCollapse": true,
+                "paging": false,
+                fixedColumns: {
+                    heightMatch: 'none'
+                }
+            });
+        });
+
+
+        function jsonExport(exportType) {
+            var fileName = createName(exportType);
+            $('#csvTable').tableExport({ fileName: fileName, type: 'json' });
+        };
+
+
+        function xmlExport(exportType) {
+            var fileName = createName(exportType);
+            $('#csvTable').tableExport({ fileName: fileName, type: 'xml' });
+        };
+
+        function pdfExport(exportType) {
+            var fileName = createName(exportType);
+            $('#csvTable').tableExport({
+                fileName: fileName,
+                type: 'pdf',
+                jspdf: {
+                    orientation: 'l',
+                    format: 'a3',
+                    margins: { left: 10, right: 10, top: 20, bottom: 20 },
+                    autotable: {
+                        styles: {
+                            fillColor: 'inherit',
+                            textColor: 'inherit'
+                        },
+                        tableWidth: 'auto'
+                    }
+                }
+            });
+
+        };
+
+        function csvExport(exportType) {
+            var fileName = createName(exportType);
+            $('#csvTable').tableExport({ fileName: fileName, type: 'csv' });
+        };
+
+        function createName(exportType) {
+            var dt = Date.now();
+            return fileName = exportType + dt.toString();
+        };
+
+        function DoCellData(cell, row, col, data) { };
+        function DoBeforeAutotable(table, headers, rows, AutotableSettings) { };
+
+    </script>
+}
